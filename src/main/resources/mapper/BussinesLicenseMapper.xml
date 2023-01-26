@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.yin.dao.CardMappers.BusinessLicenseMapper">
+    <select id="selectBusinessLicenseByUid" resultType="com.example.yin.pojo.Card.BusinessLicense">
+        select * from business_license where uid=#{uid};
+    </select>
+    <update id="updateBusinessLicense">
+        update business_license
+        set business_scope=#{businessScope},
+        organization_type=#{organizationType},
+        legal_person=#{legalPerson},
+        certificate_number=#{certificateNumber},
+        register_capital=#{registerCapital},
+        unit_name=#{unitName},
+        validity_period=#{validityPeriod},
+        credit_code=#{creditCode},
+        paid_capital=#{paidCapital},
+        approval_date=#{approvalDate},
+        establish_date=#{establishDate},
+        tax_number=#{taxNumber},
+        address=#{address},
+        register_authority=#{registerAuthority},
+        type=#{type}
+        where uid=#{uid}
+    </update>
+    <insert id="insertBusinessLicense">
+        insert into business_license (business_scope, organization_type, legal_person, certificate_number, register_capital, unit_name, validity_period, credit_code, paid_capital, approval_date, establish_date, tax_number, address, register_authority, type, uid)
+        values (#{businessScope}, #{organizationType}, #{legalPerson}, #{certificateNumber}, #{registerCapital}, #{unitName}, #{validityPeriod}, #{creditCode}, #{paidCapital}, #{approvalDate}, #{establishDate}, #{taxNumber}, #{address}, #{registerAuthority}, #{type}, #{uid})
+    </insert>
+</mapper>

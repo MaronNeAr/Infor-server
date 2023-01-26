@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.yin.dao.CardMappers.PassportMapper">
+    <select id="selectPassportByUid" resultType="com.example.yin.pojo.Card.Passport">
+        select * from passport where uid=#{uid};
+    </select>
+    <update id="updatePassport">
+        update passport
+        set name=#{name},
+        name_pinyin=#{namePinyin},
+        sex=#{sex},
+        birth=#{birth},
+        nationality=#{nationality},
+        birth_place=#{birthPlace},
+        issue_place=#{issuePlace},
+        issue_authority=#{issueAuthority},
+        issue_date=#{issueDate},
+        valid_until=#{validUntil},
+        country_code=#{countryCode},
+        MRZcode1=#{MRZcode1},
+        MRZcode2=#{MRZcode2},
+        where uid=#{uid}
+    </update>
+    <insert id="insertPassport">
+        insert into passport (name, name_pinyin, sex, birth, nationality, birth_place, issue_place, issue_authority, issue_date, valid_until, country_code, MRZcode1, MRZcode2, uid)
+        values (#{name}, #{namePinyin}, #{sex}, #{birth}, #{nationality}, #{birthPlace}, #{issuePlace}, #{bankName}, #{issueDate}, #{validUntil}, #{countryCode}, #{MRZcode1}, #{MRZcode2}, #{uid})
+    </insert>
+</mapper>

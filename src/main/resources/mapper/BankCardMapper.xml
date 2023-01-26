@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.yin.dao.CardMappers.BankCardMapper">
+    <select id="selectBankCardByUid" resultType="com.example.yin.pojo.Card.BankCard">
+        select * from bank_card where uid=#{uid};
+    </select>
+    <update id="updateBankCard">
+        update bank_card
+        set valid_date=#{validDate},
+            bank_card_number=#{bankCardNumber},
+            bank_name=#{bankName},
+            bank_card_type=#{bankCardType},
+            holder_name=#{holderName}
+        where uid=#{uid}
+    </update>
+    <insert id="insertBankCard">
+        insert into bank_card (valid_date, bank_card_number, bank_name, bank_card_type, holder_name, uid)
+        values (#{validDate}, #{bankCardNumber}, #{bankName}, #{bankCardType}, #{holderName}, #{uid})
+    </insert>
+</mapper>

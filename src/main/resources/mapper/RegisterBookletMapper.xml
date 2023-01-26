@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.yin.dao.CardMappers.RegisterBookletMapper">
+    <select id="selectRegisterBookletByUid" resultType="com.example.yin.pojo.Card.RegisterBooklet">
+        select * from register_booklet where uid=#{uid};
+    </select>
+    <update id="updateRegisterBooklet">
+        update register_booklet
+        set name=#{name},
+        sex=#{sex},
+        nation=#{nation},
+        hometown=#{hometown},
+        card_no=#{cardNo},
+        relationship=#{relationship},
+        birthday=#{birthday},
+        birth_place=#{birthPlace},
+        education=#{education},
+        height=#{height},
+        work_place=#{workPlace},
+        household_num=#{householdNum},
+        WWHere=#{WWHere},
+        WWToCity=#{WWToCity},
+        date=#{date}
+        where uid=#{uid}
+    </update>
+    <insert id="insertRegisterBooklet">
+        insert into register_booklet (name, sex, nation, hometown, card_no, relationship, birthday, birth_place, education, height, work_place, household_num, WWHere, WWToCity, date, uid)
+        values (#{name}, #{sex}, #{nation}, #{hometown}, #{cardNo}, #{relationship}, #{birthday}, #{birthPlace}, #{education}, #{height}, #{workPlace}, #{householdNum}, #{WWHere}, #{WWToCity}, #{date}, #{uid})
+    </insert>
+</mapper>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.yin.dao.CardMappers.IdCardBackMapper">
+    <select id="selectIdCardBackByUid" resultType="com.example.yin.pojo.Card.IdCardBack">
+        select * from id_card_back where uid=#{uid};
+    </select>
+    <update id="updateIdCardBack">
+        update id_card_back
+        set name=#{name},
+        nationality=#{nationality},
+        address=#{address},
+        id_number=#{idNumber},
+        birth=#{birth},
+        sex=#{sex}
+        where uid=#{uid}
+    </update>
+    <insert id="insertIdCardBack">
+        insert into id_card_back (name, nationality, address, id_number, birth, sex, uid)
+        values (#{name}, #{nationality}, #{address}, #{idNumber}, #{birth}, #{sex}, #{uid})
+    </insert>
+</mapper>

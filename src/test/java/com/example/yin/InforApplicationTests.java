@@ -8,11 +8,14 @@ import com.example.yin.dao.CardMappers.IdCardFrontMapper;
 import com.example.yin.dao.UserMapper;
 import com.example.yin.pojo.Card.BankCard;
 import com.example.yin.service.AuthService;
+import com.example.yin.service.DocumentService;
 import com.example.yin.service.ImageService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.crypto.BadPaddingException;
@@ -21,18 +24,40 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
+import org.apache.lucene.search.similarities.ClassicSimilarity;
+import org.apache.lucene.search.similarities.Similarity;
+import org.apache.lucene.search.similarities.TFIDFSimilarity;
+import org.wltea.analyzer.lucene.IKAnalyzer;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DocumentApplicationTests {
+public class InforApplicationTests {
     @Autowired
     UserMapper userMapper;
 
@@ -47,6 +72,9 @@ public class DocumentApplicationTests {
 
     @Autowired
     IdCardFrontMapper idCardFrontMapper;
+
+    @Autowired
+    DocumentService documentService;
 
 
 
@@ -117,5 +145,60 @@ public class DocumentApplicationTests {
         BankCard newBankCard = new BankCard(null, "456", "456", "456", 2, "456", 2);
         bankCardMapper.updateBankCard(newBankCard);
         System.out.println(bankCardMapper.selectBankCardByUid(2));
+    }
+
+    @Test
+    public void test06() throws IOException {
+        FileInputStream fis = new FileInputStream("document/基于BERT-IT的世界杯球队图像识别模型.docx");
+        XWPFDocument doc = new XWPFDocument(fis);
+        XWPFWordExtractor extractor = new XWPFWordExtractor(doc);
+        String text1 = extractor.getText();
+        System.out.println(text1);
+        fis.close();
+
+        // Load the PDF document
+        PDDocument document = PDDocument.load(new File("document/《数字化生存》读后感.pdf"));
+        // Instantiate PDFTextStripper
+        PDFTextStripper pdfStripper = new PDFTextStripper();
+        // Extract text from PDF
+        String text2 = pdfStripper.getText(document);
+        System.out.println(text2);
+        // Close the document
+        document.close();
+
+        // Read markdown file
+        byte[] encoded = Files.readAllBytes(Paths.get("document/数据库原理提纲.md"));
+        String markdown = new String(encoded);
+        // Parse markdown to AST
+        Parser parser = Parser.builder().build();
+        Node node = parser.parse(markdown);
+        // Render HTML from AST
+        HtmlRenderer renderer = HtmlRenderer.builder().build();
+        String html = renderer.render(node);
+        System.out.println(Jsoup.parse(html).text());
+
+        File input = new File("document/code.html");
+        Document html_doc = Jsoup.parse(input, "UTF-8", "");
+        System.out.println(html_doc.text());
+
+        Path path = Paths.get("document/“卷乎”产品与服务.txt");
+        List<String> lines = Files.readAllLines(path);
+        for (String line : lines) {
+            System.out.println(line);
+        }
+    }
+
+    @Test
+    public void Test07() throws IOException {
+        File file = new File("document/数据库原理提纲.md");
+        MockMultipartFile multipartFile = new MockMultipartFile("file", file.getName(), MediaType.MULTIPART_FORM_DATA_VALUE, new FileInputStream(file));
+        System.out.println(documentService.parseMD(multipartFile));
+    }
+
+    @Test
+    public void Test08() throws IOException {
+        String text = "这是一段需要摘要的文本...";
+        IKAnalyzer analyzer = new IKAnalyzer();
+        String summary = Summarizer.summarize(text, analyzer, 5);
     }
 }

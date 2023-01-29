@@ -78,6 +78,34 @@
             <version>1.2.47</version>
         </dependency>
 
+<!--        Apache POI:处理docx-->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>4.1.2</version>
+        </dependency>
+
+<!--        pdfbox:处理pdf-->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.24</version>
+        </dependency>
+
+<!--        common mark:markdown-->
+        <dependency>
+            <groupId>com.atlassian.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
+            <version>0.15.0</version>
+        </dependency>
+
+<!--        jsoup:处理html-->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.14.3</version>
+        </dependency>
+
         <!-- Log4j -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

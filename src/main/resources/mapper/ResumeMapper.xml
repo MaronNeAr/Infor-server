@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.yin.dao.ResumeMapper">
+    <select id="selectResumeByAccount" resultType="com.example.yin.pojo.Resume">
+        select * from v_resume where account = #{account};
+    </select>
+
+    <insert id="insertResume">
+        insert into v_resume(name, country_code, phone, email, identification_type, id_code, city, college, degree, major, edu_start_date, edu_end_date, intern_company, intern_career, intern_desc, intern_start_date, intern_end_date, product_name, product_role, product_url, product_desc, self_skill, self_evaluate, account)
+        values (#{name}, #{countryCode}, #{phone}, #{email}, #{identificationType}, #{idCode}, #{city}, #{college}, #{degree},
+        #{major}, #{eduStartDate}, #{eduEndDate}, #{internCompany}, #{internCareer}, #{internDesc}, #{internStartDate},
+        #{internEndDate}, #{productName}, #{productRole}, #{productUrl}, #{productDesc}, #{selfSkill}, #{selfEvaluate}, #{account})
+    </insert>
+
+    <update id="updateResume">
+        update v_resume
+        set name=#{name},
+        country_code=#{countryCode},
+        phone=#{phone},
+        email=#{email},
+        identification_type=#{identificationType},
+        id_code=#{idCode},
+        city=#{city},
+        college=#{college},
+        degree=#{degree},
+        major=#{major},
+        edu_start_date=#{eduStartDate},
+        edu_end_date=#{eduEndDate},
+        intern_company=#{internCompany},
+        intern_career=#{internCareer},
+        intern_desc=#{internDesc},
+        intern_start_date=#{internStartDate},
+        intern_end_date=#{internEndDate},
+        product_name=#{productName},
+        product_role=#{productRole},
+        product_url=#{productUrl},
+        product_desc=#{productDesc},
+        self_skill=#{selfSkill},
+        self_evaluate=#{selfEvaluate}
+        where account=#{account};
+    </update>
+</mapper>

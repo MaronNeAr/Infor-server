@@ -6,10 +6,13 @@ import com.example.yin.dao.CardMappers.BusinessLicenseMapper;
 import com.example.yin.dao.CardMappers.IdCardBackMapper;
 import com.example.yin.dao.CardMappers.IdCardFrontMapper;
 import com.example.yin.dao.UserMapper;
-import com.example.yin.pojo.Card.BankCard;
+import com.example.yin.pojo.Cards.BankCard;
 import com.example.yin.service.AuthService;
 import com.example.yin.service.DocumentService;
 import com.example.yin.service.ImageService;
+import com.example.yin.service.ResumeService;
+import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
+import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.InvalidAlgorithmParameterException;
@@ -44,15 +48,11 @@ import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import sun.misc.BASE64Encoder;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-
-import org.apache.lucene.search.similarities.ClassicSimilarity;
-import org.apache.lucene.search.similarities.Similarity;
-import org.apache.lucene.search.similarities.TFIDFSimilarity;
-import org.wltea.analyzer.lucene.IKAnalyzer;
 
 
 @RunWith(SpringRunner.class)
@@ -76,6 +76,9 @@ public class InforApplicationTests {
     @Autowired
     DocumentService documentService;
 
+    @Autowired
+    ResumeService resumeService;
+
 
 
     @Test
@@ -85,7 +88,9 @@ public class InforApplicationTests {
         byte[] data = new byte[file.available()];
         file.read(data);
         file.close();
-        JSONObject json = imageService.idCardRecognize(data,"back", "24.74b070ccb54c5606b3ec2c6dcb8b1f0f.2592000.1676883641.282335-28383447");
+        String urlString = URLEncoder.encode(new BASE64Encoder().encode(data), "GBK");
+        System.out.println(urlString);
+        JSONObject json = imageService.idCardRecognize(urlString,"back", "24.fd3058955bb0a2a14425a1bf7f867900.2592000.1678778180.282335-28383447");
         System.out.println(json);
         System.out.println(json.getJSONObject("words_result").getJSONObject("失效日期").get("words"));
     }
@@ -189,16 +194,21 @@ public class InforApplicationTests {
     }
 
     @Test
-    public void Test07() throws IOException {
+    public void Test07() throws IOException, InvalidTokenOffsetsException {
         File file = new File("document/数据库原理提纲.md");
         MockMultipartFile multipartFile = new MockMultipartFile("file", file.getName(), MediaType.MULTIPART_FORM_DATA_VALUE, new FileInputStream(file));
+        String text = documentService.parseMD(multipartFile);
         System.out.println(documentService.parseMD(multipartFile));
+        System.out.println(documentService.getSummary(text));
     }
 
     @Test
-    public void Test08() throws IOException {
-        String text = "这是一段需要摘要的文本...";
-        IKAnalyzer analyzer = new IKAnalyzer();
-        String summary = Summarizer.summarize(text, analyzer, 5);
+    public void Test08() throws IOException, JSONException {
+        Path path = Paths.get("document/test.pdf");
+        byte[] fileBytes = Files.readAllBytes(path);
+
+        // 将文件编码为Base64字符串
+        String base64String = Base64.getEncoder().encodeToString(fileBytes);
+        resumeService.resumeAnalysis("test.pdf", base64String);
     }
 }

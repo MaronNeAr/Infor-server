@@ -1,6 +1,6 @@
 package com.example.yin.dao.CardMappers;
 
-import com.example.yin.pojo.Card.Passport;
+import com.example.yin.pojo.Cards.Passport;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

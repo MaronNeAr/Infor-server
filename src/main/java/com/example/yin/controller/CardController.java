@@ -3,20 +3,24 @@ package com.example.yin.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.example.yin.config.common.ErrorMessage;
 import com.example.yin.config.common.SuccessMessage;
-import com.example.yin.pojo.Card.*;
+import com.example.yin.pojo.Card;
+import com.example.yin.pojo.Cards.*;
 import com.example.yin.pojo.vo.CardDefine;
 import com.example.yin.service.AuthService;
 import com.example.yin.service.CardService;
+import com.example.yin.service.FileService;
 import com.example.yin.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import sun.misc.BASE64Encoder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Base64;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class CardController {
@@ -26,17 +30,55 @@ public class CardController {
     @Autowired
     ImageService imageService;
 
-    @GetMapping("/card/{uid}")
-    public Object getUserCard(@PathVariable Integer uid) {
+    @Autowired
+    FileService fileService;
+
+    @PostMapping("/card")
+    public Object getUserCard(HttpServletRequest req) {
+        try {
+            String account = req.getParameter("account");
+            String type = req.getParameter("type");
+            if (account == null) return new ErrorMessage("参数缺失").getMessage();
+            else if (type == null) return new SuccessMessage<List<Card>>("获取卡证数据成功", cardService.getCard(account)).getMessage();
+            else return new SuccessMessage<Card>("获取卡证数据成功", cardService.getCard(account, type)).getMessage();
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ErrorMessage("获取卡证数据失败").getMessage();
+        }
+    }
+
+    @PostMapping("/card/update")
+    public Object addCard(@RequestParam("account") String account, @RequestParam("type") String type, @RequestParam("side") String side, @RequestParam("file") MultipartFile file) {
+        try {
+            if (account == null || type == null || side == null || file == null) return new ErrorMessage("缺少参数").getMessage();
+            String base64Encoded = Base64.getEncoder().encodeToString(file.getBytes());
+            UUID uuid = UUID.fromString(UUID.randomUUID().toString());
+            String path = uuid + ".jpg";
+            fileService.writeToImage("img/" + path, file);
+            String image = URLEncoder.encode(base64Encoded, "GBK");
+            String res = imageService.cardRecognize(image, type, side);
+//            String res = "test";
+            cardService.updateCard(new Card(null, type + "-" + side, res, path, account));
+            return new SuccessMessage<String>("添加/更新卡证成功", res).getMessage();
+        } catch (IOException e) {
+            System.out.println(e);
+            return new ErrorMessage("添加/更新卡证数据失败").getMessage();
+        }
+    }
+
+    @GetMapping("/cardPrev/{uid}")
+    public Object getUserCardPrev(@PathVariable Integer uid) {
         return new SuccessMessage<CardDefine>("获取成功",cardService.getAllCardsByUid(uid)).getMessage();
     }
 
-    @PostMapping("/card/{uid}")
-    public Object addCard(@PathVariable Integer uid, HttpServletRequest req) throws IOException {
+    @PostMapping("/cardPrev/{uid}")
+    public Object addCardPrev(@PathVariable Integer uid, HttpServletRequest req) throws IOException {
         if (req.getParameter("type") == null || req.getParameter("image") == null) return new ErrorMessage("参数缺失");
         String AT = AuthService.getAuth("GlFznjpVS6AQsa9PxmP8DkD9", "hrO15EH2n97jSqHkbjSaix5tnIqkf45k");
-        byte [] image = Base64.getDecoder().decode(req.getParameter("image"));
+//        String image = URLDecoder.decode(req.getParameter("image"), "GBK");
+        String image = URLEncoder.encode(req.getParameter("image"), "GBK");
         String type = req.getParameter("type");
+        System.out.println(image);
         if (type.equals("idCardBack")) {
             JSONObject json = imageService.idCardRecognize(image, "back", AT);
             String failureDate = (String) json.getJSONObject("words_result").getJSONObject("失效日期").get("words");

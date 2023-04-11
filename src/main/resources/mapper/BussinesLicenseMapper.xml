@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.yin.dao.CardMappers.BusinessLicenseMapper">
-    <select id="selectBusinessLicenseByUid" resultType="com.example.yin.pojo.Card.BusinessLicense">
+    <select id="selectBusinessLicenseByUid" resultType="com.example.yin.pojo.Cards.BusinessLicense">
         select * from business_license where uid=#{uid};
     </select>
     <update id="updateBusinessLicense">

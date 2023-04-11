@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.yin.dao.CardMappers.RegisterBookletMapper">
-    <select id="selectRegisterBookletByUid" resultType="com.example.yin.pojo.Card.RegisterBooklet">
+    <select id="selectRegisterBookletByUid" resultType="com.example.yin.pojo.Cards.RegisterBooklet">
         select * from register_booklet where uid=#{uid};
     </select>
     <update id="updateRegisterBooklet">

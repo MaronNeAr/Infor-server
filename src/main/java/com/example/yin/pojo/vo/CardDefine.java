@@ -1,6 +1,6 @@
 package com.example.yin.pojo.vo;
 
-import com.example.yin.pojo.Card.*;
+import com.example.yin.pojo.Cards.*;
 
 public class CardDefine {
     BankCard bankCard;

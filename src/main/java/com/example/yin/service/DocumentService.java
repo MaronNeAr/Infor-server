@@ -1,5 +1,13 @@
 package com.example.yin.service;
 
+import com.example.yin.dao.DocumentMapper;
+import com.example.yin.pojo.Doc;
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
+import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -15,8 +23,31 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.highlight.Highlighter;
+import org.apache.lucene.search.highlight.QueryScorer;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class DocumentService {
+    @Autowired
+    DocumentMapper documentMapper;
+
+    public List<Doc> getDocuments(String account) {
+        return documentMapper.selectFilesByAccount(account);
+    }
+
+    public boolean addDocument(Doc document) {
+        return documentMapper.insertFile(document) > 0;
+    }
+
     public String parseWord(MultipartFile multipartFile) throws IOException {
         XWPFDocument doc = new XWPFDocument(multipartFile.getInputStream());
         XWPFWordExtractor extractor = new XWPFWordExtractor(doc);
@@ -63,5 +94,26 @@ public class DocumentService {
         isr.close();
         inputStream.close();
         return str;
+    }
+
+    public String getSummary(String text) {
+//        Analyzer analyzer = new SimpleAnalyzer();
+//        TokenStream tokenStream = analyzer.tokenStream("field", new StringReader(text));
+//        tokenStream.reset();
+//        List<String> tokens = new ArrayList<>();
+//        while (tokenStream.incrementToken()) {
+//            CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
+//            tokens.add(charTermAttribute.toString());
+//        }
+//        tokenStream.close();
+//        Query query = new TermQuery(new Term("field", text));
+//        SimpleHTMLFormatter formatter = new SimpleHTMLFormatter();
+//        QueryScorer scorer = new QueryScorer(query, "field");
+//        Highlighter highlighter = new Highlighter(formatter, scorer);
+//        String summary = highlighter.getBestFragment(analyzer, "field", text);
+//        if (summary == null || summary.length() < maxLength) {
+//            return null;
+//        }
+        return "";
     }
 }

@@ -1,13 +1,21 @@
 package com.example.yin.service;
 
+import com.example.yin.dao.CardMapper;
 import com.example.yin.dao.CardMappers.*;
-import com.example.yin.pojo.Card.*;
+import com.example.yin.pojo.Card;
+import com.example.yin.pojo.Cards.*;
+import com.example.yin.pojo.Resume;
 import com.example.yin.pojo.vo.CardDefine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CardService {
+    @Autowired
+    CardMapper cardMapper;
+
     @Autowired
     BankCardMapper bankCardMapper;
 
@@ -25,6 +33,21 @@ public class CardService {
 
     @Autowired
     RegisterBookletMapper registerBookletMapper;
+
+    public List<Card> getCard(String account) {
+        return cardMapper.selectCardByAccount(account);
+    }
+
+    public Card getCard(String account, String type) {
+        return cardMapper.selectCardByAccountAndType(account, type);
+    }
+
+    public boolean updateCard(Card card) {
+        String account = card.getAccount();
+        String type = card.getType();
+        if (cardMapper.selectCardByAccountAndType(account, type) == null) return cardMapper.insertCard(card) > 0;
+        else return cardMapper.updateCard(card) > 0;
+    }
 
     public CardDefine getAllCardsByUid(Integer uid) {
         return new CardDefine(bankCardMapper.selectBankCardByUid(uid),

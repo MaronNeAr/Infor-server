@@ -3,6 +3,7 @@ package com.example.yin.controller;
 import com.example.yin.config.common.ErrorMessage;
 import com.example.yin.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,7 @@ public class DocumentController {
     @Autowired
     DocumentService documentService;
 
+    @PostMapping("/document")
     public Object uploadDocument(@RequestParam("file") MultipartFile file, HttpServletRequest req) throws IOException {
         String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".")), text;
         if (suffix.equals("docx")) text = documentService.parseWord(file);

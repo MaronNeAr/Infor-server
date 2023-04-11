@@ -1,7 +1,6 @@
 package com.example.yin.dao.CardMappers;
 
-import com.example.yin.pojo.Card.IdCardBack;
-import com.example.yin.pojo.Card.IdCardFront;
+import com.example.yin.pojo.Cards.IdCardFront;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

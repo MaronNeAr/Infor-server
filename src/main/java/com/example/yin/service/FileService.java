@@ -27,7 +27,7 @@ public class FileService {
         return FileUtils.readFileToString(file, "UTF-8");
     }
 
-    public void writeToImage(String fileName, MultipartFile file) throws IOException {
+    public void writeToFile(String fileName, MultipartFile file) throws IOException {
         if (file.isEmpty()) return;
         File dest = new File(fileName);
         if(!dest.exists())

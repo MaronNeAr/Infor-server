@@ -9,7 +9,9 @@ import com.example.yin.pojo.vo.CardDefine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class CardService {
@@ -34,6 +36,8 @@ public class CardService {
     @Autowired
     RegisterBookletMapper registerBookletMapper;
 
+    private Set<String> typeSet = new HashSet<String>(){{add("bankcard");add("other");}};
+
     public List<Card> getCard(String account) {
         return cardMapper.selectCardByAccount(account);
     }
@@ -45,7 +49,7 @@ public class CardService {
     public boolean updateCard(Card card) {
         String account = card.getAccount();
         String type = card.getType();
-        if (cardMapper.selectCardByAccountAndType(account, type) == null) return cardMapper.insertCard(card) > 0;
+        if (typeSet.contains(type) || cardMapper.selectCardByAccountAndType(account, type) == null) return cardMapper.insertCard(card) > 0;
         else return cardMapper.updateCard(card) > 0;
     }
 

@@ -3,6 +3,7 @@ package com.example.yin.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.example.yin.config.common.ErrorMessage;
 import com.example.yin.config.common.SuccessMessage;
+import com.example.yin.constant.Constants;
 import com.example.yin.pojo.Card;
 import com.example.yin.pojo.Cards.*;
 import com.example.yin.pojo.vo.CardDefine;
@@ -11,14 +12,17 @@ import com.example.yin.service.CardService;
 import com.example.yin.service.FileService;
 import com.example.yin.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sun.misc.BASE64Encoder;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,6 +36,15 @@ public class CardController {
 
     @Autowired
     FileService fileService;
+
+    @Configuration
+    public static class MyPicConfig implements WebMvcConfigurer {
+        @Override
+        public void addResourceHandlers(ResourceHandlerRegistry registry) {
+            registry.addResourceHandler("/img/**")
+                    .addResourceLocations(Constants.IMAGES_PATH);
+        }
+    }
 
     @PostMapping("/card")
     public Object getUserCard(HttpServletRequest req) {
@@ -48,17 +61,18 @@ public class CardController {
     }
 
     @PostMapping("/card/update")
-    public Object addCard(@RequestParam("account") String account, @RequestParam("type") String type, @RequestParam("side") String side, @RequestParam("file") MultipartFile file) {
+    public Object addCard(@RequestParam("account") String account, @RequestParam("type") String type, @RequestParam("title") String title, @RequestParam("side") String side, @RequestParam("file") MultipartFile file) {
         try {
             if (account == null || type == null || side == null || file == null) return new ErrorMessage("缺少参数").getMessage();
             String base64Encoded = Base64.getEncoder().encodeToString(file.getBytes());
             UUID uuid = UUID.fromString(UUID.randomUUID().toString());
             String path = uuid + ".jpg";
-            fileService.writeToImage("img/" + path, file);
+            fileService.writeToFile("img/" + path, file);
             String image = URLEncoder.encode(base64Encoded, "GBK");
-            String res = imageService.cardRecognize(image, type, side);
+            String res = type.equals("other") ? null : imageService.cardRecognize(image, type, side);
 //            String res = "test";
-            cardService.updateCard(new Card(null, type + "-" + side, res, path, account));
+            if (!side.equals("null")) type += "-" + side;
+            cardService.updateCard(new Card(null, type, title, res, new Date(System.currentTimeMillis()).toString(), path, account));
             return new SuccessMessage<String>("添加/更新卡证成功", res).getMessage();
         } catch (IOException e) {
             System.out.println(e);

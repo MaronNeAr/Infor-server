@@ -12,15 +12,17 @@
     </select>
 
     <insert id="insertCard">
-        insert into v_card(type, detail, src, account)
-        values (#{type}, #{detail}, #{src}, #{account})
+        insert into v_card(type, title, detail, date, src, account)
+        values (#{type}, #{title}, #{detail}, #{date}, #{src}, #{account})
     </insert>
 
     <update id="updateCard">
         update v_card
-        set type=#{type},
+        set title=#{title},
         detail=#{detail},
+        date=#{date},
         src=#{src}
-        where account=#{account};
+        where account=#{account}
+        and type=#{type};
     </update>
 </mapper>

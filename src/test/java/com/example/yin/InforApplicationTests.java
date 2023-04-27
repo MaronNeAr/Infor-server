@@ -34,6 +34,7 @@ import java.nio.file.Path;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.Base64;
 
 import java.io.FileInputStream;
@@ -52,12 +53,16 @@ import sun.misc.BASE64Encoder;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class InforApplicationTests {
+    @Autowired
+    AuthService authService;
+
     @Autowired
     UserMapper userMapper;
 
@@ -84,13 +89,13 @@ public class InforApplicationTests {
     @Test
     public void test02() throws IOException {
         ImageService imageService = new ImageService();
-        FileInputStream file = new FileInputStream("img/sfzTest.jpg");
+        FileInputStream file = new FileInputStream("img/b7f5fcf3-bf50-4e22-bd59-4937c88fbef2.jpg");
         byte[] data = new byte[file.available()];
         file.read(data);
         file.close();
         String urlString = URLEncoder.encode(new BASE64Encoder().encode(data), "GBK");
-        System.out.println(urlString);
-        JSONObject json = imageService.idCardRecognize(urlString,"back", "24.fd3058955bb0a2a14425a1bf7f867900.2592000.1678778180.282335-28383447");
+//        System.out.println(urlString);
+        JSONObject json = imageService.idCardRecognize(urlString,"back", AuthService.getAuth());
         System.out.println(json);
         System.out.println(json.getJSONObject("words_result").getJSONObject("失效日期").get("words"));
     }
@@ -194,12 +199,13 @@ public class InforApplicationTests {
     }
 
     @Test
-    public void Test07() throws IOException, InvalidTokenOffsetsException {
+    public void Test07() throws Exception {
         File file = new File("document/数据库原理提纲.md");
         MockMultipartFile multipartFile = new MockMultipartFile("file", file.getName(), MediaType.MULTIPART_FORM_DATA_VALUE, new FileInputStream(file));
         String text = documentService.parseMD(multipartFile);
         System.out.println(documentService.parseMD(multipartFile));
         System.out.println(documentService.getSummary(text));
+        System.out.println(documentService.getTags(text));
     }
 
     @Test
@@ -210,5 +216,13 @@ public class InforApplicationTests {
         // 将文件编码为Base64字符串
         String base64String = Base64.getEncoder().encodeToString(fileBytes);
         resumeService.resumeAnalysis("test.pdf", base64String);
+    }
+
+    @Test
+    public void Test09() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = dateFormat.format(new Date());
+        System.out.println(formattedDate);
+        System.out.println(Integer.valueOf(null));
     }
 }

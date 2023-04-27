@@ -1,12 +1,7 @@
 package com.example.yin.service;
-
+import com.example.yin.api.JsonRequest;
 import com.example.yin.dao.DocumentMapper;
 import com.example.yin.pojo.Doc;
-import org.apache.lucene.analysis.core.SimpleAnalyzer;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
-import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,16 +18,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.web.multipart.MultipartFile;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.highlight.Highlighter;
-import org.apache.lucene.search.highlight.QueryScorer;
-
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -96,24 +82,37 @@ public class DocumentService {
         return str;
     }
 
-    public String getSummary(String text) {
-//        Analyzer analyzer = new SimpleAnalyzer();
-//        TokenStream tokenStream = analyzer.tokenStream("field", new StringReader(text));
-//        tokenStream.reset();
-//        List<String> tokens = new ArrayList<>();
-//        while (tokenStream.incrementToken()) {
-//            CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
-//            tokens.add(charTermAttribute.toString());
-//        }
-//        tokenStream.close();
-//        Query query = new TermQuery(new Term("field", text));
-//        SimpleHTMLFormatter formatter = new SimpleHTMLFormatter();
-//        QueryScorer scorer = new QueryScorer(query, "field");
-//        Highlighter highlighter = new Highlighter(formatter, scorer);
-//        String summary = highlighter.getBestFragment(analyzer, "field", text);
-//        if (summary == null || summary.length() < maxLength) {
-//            return null;
-//        }
-        return "";
+    public String[] parseFile(MultipartFile file, String type) throws IOException {
+        try {
+            String text = null;
+            if (type.equals("docx")) text = parseWord(file);
+            else if (type.equals("pdf")) text = parsePdf(file);
+            else if (type.equals("md")) text = parseMD(file);
+            else if (type.equals("txt")) text = parseTxt(file);
+            else if (type.equals("html")) text = parseHtml(file);
+            else return new String[2];
+            return new String[]{getSummary(text), getTags(text)};
+        } catch (Exception e) {
+            System.out.println(e);
+            return new String[2];
+        }
+    }
+
+    public String getSummary(String text) throws Exception {
+        String baiduCloudUrl = "https://aip.baidubce.com/rpc/2.0/nlp/v1/news_summary?charset=UTF-8&access_token=" + AuthService.getAuth();
+        JsonRequest request = new JsonRequest(baiduCloudUrl);
+        request.addParam("title", "title");
+//        request.addParam("content", "麻省理工学院的研究团队为无人机在仓库中使用RFID技术进行库存查找等工作，创造了一种聪明的新方式。它允许公司使用更小，更安全的无人机在巨型建筑物中找到之前无法找到的东西。使用RFID标签更换仓库中的条形码，将帮助提升自动化并提高库存管理的准确性。与条形码不同，RFID标签不需要对准扫描，标签上包含的信息可以更广泛和更容易地更改。它们也可以很便宜，尽管有优点，但是它具有局限性，对于跟踪商品没有设定RFID标准，“标签冲突”可能会阻止读卡器同时从多个标签上拾取信号。扫描RFID标签的方式也会在大型仓库内引起尴尬的问题。固定的RFID阅读器和阅读器天线只能扫描通过设定阈值的标签，手持式读取器需要人员出去手动扫描物品。几家公司已经解决了无人机读取RFID的技术问题。配有RFID读卡器的无人机可以代替库存盘点的人物，并以更少的麻烦更快地完成工作。一个人需要梯子或电梯进入的高箱，可以通过无人机很容易地达到，无人机可以被编程为独立地导航空间，并且他们比执行大规模的重复任务的准确性和效率要比人类更好。目前市场上的RFID无人机需要庞大的读卡器才能连接到无人机的本身。这意味着它们必须足够大，以支持附加硬件的尺寸和重量，使其存在坠机风险。麻省理工学院的新解决方案，名为Rfly，允许无人机阅读RFID标签，而不用捆绑巨型读卡器。相反，无人机配备了一个微小的继电器，它像Wi-Fi中继器一样。无人机接收从远程RFID读取器发送的信号，然后转发它读取附近的标签。由于继电器很小，这意味着可以使用更小巧的无人机，可以使用塑料零件，可以适应较窄的空间，不会造成人身伤害的危险。麻省理工学院的Rfly系统本质上是对现有技术的一个聪明的补充，它不仅消除了额外的RFID读取器，而且由于它是一个更轻的解决方案，允许小型无人机与大型无人机做同样的工作。研究团队正在马萨诸塞州的零售商测试该系统。");
+        request.addParam("content", text.substring(0, 2000));
+        request.addParam("max_summary_len", 200);
+        return request.send();
+    }
+
+    public String getTags(String text) throws Exception {
+        String baiduCloudUrl = "https://aip.baidubce.com/rpc/2.0/nlp/v1/keyword?charset=UTF-8&access_token=" + AuthService.getAuth();
+        JsonRequest request = new JsonRequest(baiduCloudUrl);
+        request.addParam("title", "title");
+        request.addParam("content", text.substring(0, 2000));
+        return request.send();
     }
 }

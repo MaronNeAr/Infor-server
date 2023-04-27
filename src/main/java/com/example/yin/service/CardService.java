@@ -53,6 +53,10 @@ public class CardService {
         else return cardMapper.updateCard(card) > 0;
     }
 
+    public boolean updateTagsAndNoteByBid (Integer id, String tags, String note) {
+        return cardMapper.updateTagsAndNoteByBid(id, tags, note) > 0;
+    }
+
     public CardDefine getAllCardsByUid(Integer uid) {
         return new CardDefine(bankCardMapper.selectBankCardByUid(uid),
                 businessLicenseMapper.selectBusinessLicenseByUid(uid),

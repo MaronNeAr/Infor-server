@@ -21,6 +21,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -72,11 +73,29 @@ public class CardController {
             String res = type.equals("other") ? null : imageService.cardRecognize(image, type, side);
 //            String res = "test";
             if (!side.equals("null")) type += "-" + side;
-            cardService.updateCard(new Card(null, type, title, res, new Date(System.currentTimeMillis()).toString(), path, account));
-            return new SuccessMessage<String>("添加/更新卡证成功", res).getMessage();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = dateFormat.format(new Date());
+            cardService.updateCard(new Card(null, type, title, res, formattedDate, path, account));
+            return new SuccessMessage<String>("添加/更新卡证数据成功", res).getMessage();
         } catch (IOException e) {
             System.out.println(e);
             return new ErrorMessage("添加/更新卡证数据失败").getMessage();
+        }
+    }
+
+    @PostMapping("/card/modify")
+    public Object modifyTagsAndNote(HttpServletRequest req) {
+        try {
+            String id = req.getParameter("id");
+            String tags = req.getParameter("tags");
+            String note = req.getParameter("note");
+            if (id == null || tags == null || note == null) return new ErrorMessage("缺少参数").getMessage();
+            boolean flag = cardService.updateTagsAndNoteByBid(Integer.valueOf(id), tags, note);
+            if (flag) return new SuccessMessage("修改标签/笔记成功").getMessage();
+            else return new ErrorMessage("修改标签/笔记失败").getMessage();
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ErrorMessage("修改标签/笔记失败").getMessage();
         }
     }
 

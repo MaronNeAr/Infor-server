@@ -15,4 +15,6 @@ public interface CardMapper {
     int insertCard(Card card);
 
     int updateCard(Card card);
+
+    int updateTagsAndNoteByBid(@Param("id") Integer id, @Param("tags") String tags, @Param("note") String note);
 }

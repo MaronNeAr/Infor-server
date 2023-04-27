@@ -70,4 +70,9 @@ public class ImageService {
         String baiduCloudUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/" + type + "?access_token=" + AuthService.getAuth();
         return HttpRequest.sendPost(baiduCloudUrl, "image=" + image + (side == null || side.equals("null") ? "" : "&id_card_side=" + side));
     }
+
+    public String billRecognize(String image, String type) {
+        String baiduCloudUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/" + type + "?access_token=" + AuthService.getAuth();
+        return HttpRequest.sendPost(baiduCloudUrl, "image=" + image);
+    }
 }

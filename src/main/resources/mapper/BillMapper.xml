@@ -2,22 +2,22 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.yin.dao.CardMapper">
-    <select id="selectCardByAccount" resultType="com.example.yin.pojo.Card">
-        select * from v_card where account = #{account};
+<mapper namespace="com.example.yin.dao.BillMapper">
+    <select id="selectBillByAccount" resultType="com.example.yin.pojo.Bill">
+        select * from v_bill where account = #{account};
     </select>
 
-    <select id="selectCardByAccountAndType" resultType="com.example.yin.pojo.Card">
-        select * from v_card where account = #{account} and type = #{type};
+    <select id="selectBillByAccountAndType" resultType="com.example.yin.pojo.Bill">
+        select * from v_bill where account = #{account} and type = #{type};
     </select>
 
-    <insert id="insertCard">
-        insert into v_card(type, title, detail, date, src, account)
+    <insert id="insertBill">
+        insert into v_bill(type, title, detail, date, src, account)
         values (#{type}, #{title}, #{detail}, #{date}, #{src}, #{account})
     </insert>
 
     <update id="updateCard">
-        update v_card
+        update v_bill
         set title=#{title},
         detail=#{detail},
         date=#{date},
@@ -27,7 +27,7 @@
     </update>
 
     <update id="updateTagsAndNoteByBid">
-        update v_card
+        update v_bill
         set tags=#{tags},
         note=#{note}
         where id=#{id};
